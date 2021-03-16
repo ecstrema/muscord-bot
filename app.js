@@ -13,7 +13,8 @@ client.on('ready', () => {
 let params = {
     muted_bool: false,
     minpr_number: 0,
-    minissue_number: 100,
+    minmsissue_number: 100,
+    minghissue_number: 0,
     timebeforedelete_number: 10000,
 }
 
@@ -30,7 +31,8 @@ Additionnal commands include:
  - \`/restart\`: Recreate the discord bot client.
  - \`/delete n\`: Delete the last n messages. Use without n to delete only the last one.
  - \`/set target value\`: Set a parameter (\`target\`) to \`value\`. Available parameters are:
-    - \`minissue_number (default value: \`100\`): The minimum issue number required in #number before linking it.
+    - \`minmsissue_number (default value: \`100\`): The minimum issue number required in #number before linking to an issue on musescore.org.
+    - \`minghissue_number (default value: \`100\`): The minimum issue number required in #number before linking to an issue on github.
     - \`minpr_number\` (default value: \`0\`): The minimum number required in pr#number before linking it.
     - \`timebeforedelete_number\` (default value: \`10000\`): some of this bots' messages autodelete after some time. Use this value (in ms) to configure it.
     - \`muted_bool\` (default value: \`false\`): Whether the bot is muted. See also \`/mute\` and \`/unmute\`.
@@ -216,7 +218,7 @@ Additionnal commands include:
                     }
                     const strNumber = issue.substr(3);
                     const n = parseInt(strNumber, 10);
-                    if (n > params.minpr_number) {
+                    if (n > params.minghissue_number) {
                         msg.channel.send("https://github.com/musescore/MuseScore/issues/" + strNumber);
                         return;
                     }
@@ -229,9 +231,9 @@ Additionnal commands include:
                     if (!issue) {
                         continue;
                     }
-                    const strNumber = issue.substr(1);
+                    const strNumber = issue.substr(3);
                     const n = parseInt(strNumber, 10);
-                    if (n > params.minissue_number) {
+                    if (n > params.minmsissue_number) {
                         msg.channel.send("https://musescore.org/node/" + strNumber);
                         return;
                     }
