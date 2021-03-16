@@ -208,7 +208,22 @@ Additionnal commands include:
                     }
                 }
             }
-            const issues = content.match(/(?<!pr)#(\d+)/gi);
+            const ghIssues = content.match(/gh#(\d+)/gi);
+            if (ghIssues) {
+                for (const issue of ghIssues) {
+                    if (!issue) {
+                        continue;
+                    }
+                    const strNumber = issue.substr(3);
+                    const n = parseInt(strNumber, 10);
+                    if (n > params.minpr_number) {
+                        msg.channel.send("https://github.com/musescore/MuseScore/issues/" + strNumber);
+                        return;
+                    }
+                }
+            }
+            const issues = content.match(/ms#(\d+)/gi);
+            // const issues = content.match(/(?<!pr)(?<!gh)#(\d+)/gi);
             if (issues) {
                 for (const issue of issues) {
                     if (!issue) {
