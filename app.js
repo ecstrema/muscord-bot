@@ -165,7 +165,7 @@ Additionnal commands include:
                 else {
                     bot_msg_promise = send(msg.channel, ["Deleted last message."].map((m) => m + willDisappear ));
                 }
-                msg.delete();
+                // msg.delete();
                 if (bot_msg_promise && params.timebeforedelete_number) {
                     bot_msg_promise.then((bot_msg) => {
                         setTimeout(() => {
