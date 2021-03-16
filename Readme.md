@@ -2,4 +2,4 @@
 
 A Discord bot for Musescore.
 
-Use `/s` for a detailed explanation.
+Use `/help` for a detailed explanation.
