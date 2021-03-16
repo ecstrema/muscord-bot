@@ -69,7 +69,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
         }
 
         if (msg.content.startsWith('/set')) {
-            const args = msg.content.split(' ');
+            const args = msg.content.trim().split(/ +/);
             let target = args[1];
             if (!target) {
                 reply(msg, [`Invalid usage: no value specified.\nExample of correct usage: \`/set minpr_number 250\``]);
@@ -132,7 +132,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
             return;
         }
         if (msg.content.startsWith('/delete')) {
-            let n = parseInt(msg.content.split(' ')[1]);
+            let n = parseInt(msg.content.trim().split(/ +/)[1]);
             if (!Number.isFinite(n)) {
                 n = 1;
             }
