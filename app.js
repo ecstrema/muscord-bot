@@ -19,6 +19,23 @@ let params = {
 
 client.on('message', (msg) => {
     try {
+        if (isOneIn(msg.content, ['/h', '/help', '/man'])) {
+            msg.channel.send(`
+This bot finds issues and pull requests in your comments and adds a link to them.
+To reference issues, use #issue_number, and for PRs use pr#pr_number.
+
+Additionnal commands include:
+ - \`/mute\`: Prevent the bot from sending additionnal messages. It will still be listening (and answering) to commands.
+ - \`/unmute\`: unmute the bot.
+ - \`/restart\`: Recreate the discord bot client.
+ - \`/delete n\`: Delete the last n messages. Use without n to delete only the last one.
+ - \`/set target value\`: Set a parameter (\`target\`) to \`value\`. Available parameters are:
+    - \`minissue_number (default value: \`100\`): The minimum issue number required in #number before linking it.
+    - \`minpr_number\` (default value: \`0\`): The minimum number required in pr#number before linking it.
+    - \`timebeforedelete_number\` (default value: \`10000\`): some of this bots' messages autodelete after some time. Use this value (in ms) to configure it.
+    - \`muted_bool\` (default value: \`false\`): Whether the bot is muted. See also \`/mute\` and \`/unmute\`.
+            `)
+        }
         if (msg.content === '/mute') {
             if (params.muted_bool) {
                 reply(msg, ["Already Muted", "Sorry Sir, but I cannot talk."]);
@@ -37,7 +54,7 @@ client.on('message', (msg) => {
             reply(msg, ["And why would you think I am muted?", "I am already free to speak."]);
             return;
         }
-        if (msg.content === '/integrate') {
+        if (isOneIn(msg.content, ['/integrate', 'restart'])) {
             client = new Discord.Client();
             client.login(process.env.BOT_TOKEN);
 
