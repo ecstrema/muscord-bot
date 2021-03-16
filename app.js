@@ -191,7 +191,6 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
         }
         if (containsOneIn(msg.content, ["Thank you", "Merci", "Danke", "Gracias"]) && msg.author.id !== client.user.id) {
             send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:", "De nada", "El placer es mio", "De rien", "Je suis la pour vous servir..."]);
-            return;
         }
         if (params.muted_bool) {
             return;
@@ -225,7 +224,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
                 }
             }
             const issues = content.match(/ms#(\d+)/gi);
-            // const issues = content.match(/(?<!pr)(?<!gh)#(\d+)/gi);
+            // const issues = content.match(/(?<!pr)(?<!gh)(?<!ms)#(\d+)/gi);
             if (issues) {
                 for (const issue of issues) {
                     if (!issue) {
@@ -246,6 +245,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
         client.login(process.env.BOT_TOKEN);
 
         client.on('ready', () => {
+            console.log("Bot is ready");
             send(msg.channel, ["I crashed but restarted.", "Wowowowow I just keep crashin'", "Good thing the ground is there, cause I keep crashin'"]);
         });
         return;
