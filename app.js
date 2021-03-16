@@ -23,7 +23,7 @@ client.on('message', (msg) => {
         if (isOneIn(msg.content, ['/h', '/help', '/man'])) {
             msg.channel.send(`
 This bot finds issues and pull requests in your comments and adds a link to them.
-To reference issues, use #issue_number, and for PRs use pr#pr_number.
+To reference issues, use ms#issue_number, and for PRs use pr#pr_number. For github issues, use gh#issue_number.
 
 Additionnal commands include:
  - \`/mute\`: Prevent the bot from sending additionnal messages. It will still be listening (and answering) to commands.
@@ -36,7 +36,9 @@ Additionnal commands include:
     - \`minpr_number\` (default value: \`0\`): The minimum number required in pr#number before linking it.
     - \`timebeforedelete_number\` (default value: \`10000\`): some of this bots' messages autodelete after some time. Use this value (in ms) to configure it.
     - \`muted_bool\` (default value: \`false\`): Whether the bot is muted. See also \`/mute\` and \`/unmute\`.
-            `)
+
+If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
+`)
         }
         if (msg.content === '/mute') {
             if (params.muted_bool) {
@@ -206,7 +208,6 @@ Additionnal commands include:
                     const n = parseInt(strNumber, 10);
                     if (n > params.minpr_number) {
                         msg.channel.send("https://github.com/musescore/MuseScore/pull/" + strNumber);
-                        return;
                     }
                 }
             }
@@ -220,7 +221,6 @@ Additionnal commands include:
                     const n = parseInt(strNumber, 10);
                     if (n > params.minghissue_number) {
                         msg.channel.send("https://github.com/musescore/MuseScore/issues/" + strNumber);
-                        return;
                     }
                 }
             }
@@ -235,7 +235,6 @@ Additionnal commands include:
                     const n = parseInt(strNumber, 10);
                     if (n > params.minmsissue_number) {
                         msg.channel.send("https://musescore.org/node/" + strNumber);
-                        return;
                     }
                 }
             }
