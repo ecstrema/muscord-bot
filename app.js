@@ -192,7 +192,6 @@ client.on('message', (msg) => {
                 }
             }
             const issues = content.match(/(?<!pr)#(\d+)/gi);
-            console.log(issues);
             if (issues) {
                 for (const issue of issues) {
                     if (!issue) {
