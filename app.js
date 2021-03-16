@@ -192,6 +192,9 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
         if (containsOneIn(msg.content, ["Thank you", "Merci", "Danke", "Gracias"]) && msg.author.id !== client.user.id) {
             send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:", "De nada", "El placer es mio", "De rien", "Je suis la pour vous servir..."]);
         }
+        if (containsOneIn(msg.content, ["musebot"])) {
+            reply(msg, ["That is your opinion"])
+        }
         if (params.muted_bool) {
             return;
         }
