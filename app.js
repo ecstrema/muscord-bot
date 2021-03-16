@@ -203,7 +203,7 @@ Additionnal commands include:
                     const strNumber = pr.substr(3);
                     const n = parseInt(strNumber, 10);
                     if (n > params.minpr_number) {
-                        msg.channel.send("https://musescore.org/node/" + strNumber);
+                        msg.channel.send("https://github.com/musescore/MuseScore/pull/" + strNumber);
                         return;
                     }
                 }
@@ -217,7 +217,7 @@ Additionnal commands include:
                     const strNumber = issue.substr(1);
                     const n = parseInt(strNumber, 10);
                     if (n > params.minissue_number) {
-                        msg.channel.send("https://github.com/musescore/MuseScore/pull/" + strNumber);
+                        msg.channel.send("https://musescore.org/node/" + strNumber);
                         return;
                     }
                 }
