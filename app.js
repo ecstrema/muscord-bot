@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const fetch = require('node-fetch');
 
 // initialize dotenv
 require('dotenv').config();
@@ -184,16 +185,29 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
             return;
         }
         if (msg.content.toLowerCase().includes("interesting...") && msg.author.id !== client.user.id) {
-            send(msg.channel, ["This certainly is interesting...", "very... interesting", "how interesting..."]
-            .map((m) => { return m + "\nhttps://en.wikipedia.org/wiki/Special:Random"}));
+            linkRandomPages(msg, "https://en.wikipedia.org/wiki/Special:Random",
+                [
+                "This certainly is interesting...",
+                "very... interesting",
+                "how interesting..."
+                ])
         }
         if (msg.content.toLowerCase().includes("beautiful") && msg.author.id !== client.user.id) {
-            send(msg.channel, ["This certainly is beautiful...", "very... beautiful", "how beautiful..."]
-            .map((m) => { return m + "\nhttps://source.unsplash.com/featured/?future?sig=" + Math.floor(Math.random() * 1000000)}));
+          linkRandomPages(msg, "https://source.unsplash.com/featured/?future",
+              [
+              "This certainly is beautiful...",
+              "very... beautiful",
+              "how beautiful..."
+              ])
         }
         if (msg.content.toLowerCase().includes("random") && msg.author.id !== client.user.id) {
-            send(msg.channel, ["This certainly is random...", "very... random", "how random..."]
-            .map((m) => { return m + "\nhttps://source.unsplash.com/featured/?rock?sig=" + Math.floor(Math.random() * 1000000)}));
+          linkRandomPages(msg, "https://source.unsplash.com/featured/?rock",
+              [
+              "This certainly is random...",
+              "very... random",
+              "how random..."
+              ])
+
         }
         if (isOneIn(msg.content, ["Thank you", "Merci", "Danke"]) && msg.author.id !== client.user.id) {
             send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:"]);
@@ -262,12 +276,22 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
     }
 });
 
+function linkRandomPages(msg, url, choices) {
+    fetch(url + "?sig=" + Math.floor(Math.random() * 1000000), { method: 'GET', }).then((response) => {
+        send(msg.channel, choices.map((m) => { return `${m}\n${response.url}` }));
+    })
+}
+
 function reply(msg, choices) {
-    return msg.reply(choices[Math.floor(Math.random() * choices.length)]);
+    return msg.reply(getOneOf(choices));
 }
 
 function send(channel, choices) {
-    return channel.send(choices[Math.floor(Math.random() * choices.length)])
+    return channel.send(getOneOf(choices));
+}
+
+function getOneOf(choices) {
+    return choices[Math.floor(Math.random() * choices.length)];
 }
 
 function isOneIn(str, array) {
