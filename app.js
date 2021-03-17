@@ -31,11 +31,11 @@ Additionnal commands include:
  - \`/restart\`: Recreate the discord bot client.
  - \`/delete n\`: Delete the last n messages. Use without n to delete only the last one.
  - \`/set target value\`: Set a parameter (\`target\`) to \`value\`. Available parameters are:
-    - \`minmsissue_number\` (default value: \`100\`): The minimum issue number required in #number before linking to an issue on musescore.org.
-    - \`minghissue_number\` (default value: \`100\`): The minimum issue number required in #number before linking to an issue on github.
-    - \`minpr_number\` (default value: \`0\`): The minimum number required in pr#number before linking it.
-    - \`timebeforedelete_number\` (default value: \`10000\`): some of this bot's messages autodelete after some time. Use this value (in ms) to configure it.
-    - \`muted_bool\` (default value: \`false\`): Whether the bot is muted. See also \`/mute\` and \`/unmute\`.
+    * \`minmsissue_number\` (default value: \`100\`): The minimum issue number required in #number before linking to an issue on musescore.org.
+    * \`minghissue_number\` (default value: \`100\`): The minimum issue number required in #number before linking to an issue on github.
+    * \`minpr_number\` (default value: \`0\`): The minimum number required in pr#number before linking it.
+    * \`timebeforedelete_number\` (default value: \`10000\`): some of this bot's messages autodelete after some time. Use this value (in ms) to configure it.
+    * \`muted_bool\` (default value: \`false\`): Whether the bot is muted. See also \`/mute\` and \`/unmute\`.
 
 If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
 `)
