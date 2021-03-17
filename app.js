@@ -32,7 +32,7 @@ Additionnal commands include:
  - \`/delete n\`: Delete the last n messages. Use without n to delete only the last one.
  - \`/set target value\`: Set a parameter (\`target\`) to \`value\`. Available parameters are:
     - \`minmsissue_number\` (default value: \`100\`): The minimum issue number required in #number before linking to an issue on musescore.org.
-    - \`minghissue_number (default value: \`100\`): The minimum issue number required in #number before linking to an issue on github.
+    - \`minghissue_number\` (default value: \`100\`): The minimum issue number required in #number before linking to an issue on github.
     - \`minpr_number\` (default value: \`0\`): The minimum number required in pr#number before linking it.
     - \`timebeforedelete_number\` (default value: \`10000\`): some of this bot's messages autodelete after some time. Use this value (in ms) to configure it.
     - \`muted_bool\` (default value: \`false\`): Whether the bot is muted. See also \`/mute\` and \`/unmute\`.
@@ -180,6 +180,9 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
             });
             return;
         }
+        if (params.muted_bool) {
+            return;
+        }
         if (msg.content.toLowerCase().includes("interesting...") && msg.author.id !== client.user.id) {
             send(msg.channel, ["This certainly is interesting...", "very... interesting", "how interesting..."]
             .map((m) => { return m + "\nhttps://en.wikipedia.org/wiki/Special:Random"}));
@@ -196,14 +199,11 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
             send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:"]);
             return;
         }
-        if (containsOneIn(msg.content, ["Thank you", "Merci", "Danke", "Gracias"]) && msg.author.id !== client.user.id) {
+        if (isOneIn(msg.content, ["Thank you", "Merci", "Danke", "Gracias"]) && msg.author.id !== client.user.id) {
             send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:", "De nada", "El placer es mio", "De rien", "Je suis la pour vous servir..."]);
         }
         if (containsOneIn(msg.content, ["@musebot"])) {
             reply(msg, ["... Well that's fun...", "Now that the truth is uncovered...", "Just who exactly do you think I am?", "That is your opinion.", "Wow that's so... meaningful!", "Could you guys please ban him?", "Hey I am not some kind of mere robot!"])
-        }
-        if (params.muted_bool) {
-            return;
         }
         if (msg.author.id !== client.user.id) {
             let content = msg.content.replace(/ +/g, '');;
@@ -256,7 +256,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
 
         client.on('ready', () => {
             console.log("Bot is ready");
-            send(msg.channel, ["I crashed but restarted.", "Wowowowow I just keep crashin'", "Good thing the ground is there, cause I keep crashin'"]);
+            send(msg.channel, ["I crashed but restarted. Casually.", "Wowowowow I just keep crashin'", "Good thing the ground is there, cause I keep crashin'"]);
         });
         return;
     }
