@@ -26,17 +26,47 @@ const webhooks = new Webhooks({
 webhooks.onAny((m) => {
     if (newsChannel) {
         newsChannel.send(m.name + " event received");
-        switch (m.name) {
-            case "push":
-                console.log(m.payload);
-                newsChannel.send(`New Pull Request: ${m.payload.pull_request.number} - ${m.payload.pull_request.title} by ${m.payload.pull_request.user.login}\n${m.payload.pull_request.html_url}`);
-                break;
+        if (m.name === "push") {
+            if (!m.payload.commits.length) return;
 
-            default:
-                newsChannel.send("Received unknown event from github: " + m.name);
-                break;
+            const branch = m.payload.ref.replace("refs/heads/", "");
+            const message = m.payload.commits[0].message.slice(0, 70);
+            const link = m.payload.commits[0].url
+
+            if (m.payload.commits.length > 1) {
+                newsChannel.send(`${m.payload.pusher.name} pushed ${m.payload.commits.length} commits to ${branch}, including ${message}\n${link}`);
+            }
+            else {
+                newsChannel.send(`${m.payload.pusher.name} pushed commit to ${branch}: ${message}\n${link}`);
+            }
+            return;
         }
-    } else {
+
+        if (m.name === "pull_request") {
+            console.log(m.payload);
+            newsChannel.send(`New Pull Request: ${m.payload.pull_request.number} - ${m.payload.pull_request.title} by ${m.payload.pull_request.user.login}\n${m.payload.pull_request.html_url}`);
+            return;
+        }
+
+        if (m.name === "watch") {
+            const stars = m.payload.repository.watchers_count;
+            if (!stars % 1000) {
+                newsChannel.send(`We reached ${stars} stars in the ${m.payload.repository.name} repo!`)
+            }
+            return;
+        }
+
+        if (m.name === "fork") {
+            const forks = m.payload.repository.forks_count;
+            if (!forks % 1000) {
+                newsChannel.send(`We reached ${forks} forks in the ${m.payload.repository.name} repo!`)
+            }
+            return;
+        }
+
+        newsChannel.send("Received unknown event from github: " + m.name);
+    }
+    else {
         fetchChannel();
     }
 });
