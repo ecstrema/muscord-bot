@@ -7,9 +7,41 @@ require('dotenv').config();
 var client = new Discord.Client();
 client.login(process.env.BOT_TOKEN);
 
+var newsChannel = null;
+
 client.on('ready', () => {
     console.log('Bot is ready');
+    fetchChannel();
 });
+
+// install with: npm install @octokit/webhooks
+const { Webhooks } = require("@octokit/webhooks");
+
+require('dotenv').config();
+
+const webhooks = new Webhooks({
+  secret: process.env.WEBHOOK_TOKEN,
+});
+
+webhooks.onAny(({ id, name, payload }) => {
+    if (newsChannel) {
+        newsChannel.send(name + " event received");
+        switch (name) {
+            case "push":
+                newsChannel.send(`New Pull Request: ${payload.pull_request.number} - ${payload.pull_request.title} by ${payload.pull_request.user.login}\n${payload.pull_request.html_url}`);
+                break;
+
+            default:
+                newsChannel.send("Received unknown event from github: " + name);
+                break;
+        }
+    } else {
+        fetchChannel();
+    }
+});
+
+require("http").createServer(webhooks.middleware).listen(3000);
+// can now receive webhook events at port 3000
 
 let params = {
     muted_bool: false,
@@ -309,4 +341,13 @@ function containsOneIn(str, array) {
         }
     }
     return false;
+}
+
+function fetchChannel() {
+    client.channels.fetch('821194544825237518')
+        .then((channel) => {
+            newsChannel = channel;
+            console.log("Pushing news to: " + channel.name);
+        })
+        .catch(console.error);
 }
