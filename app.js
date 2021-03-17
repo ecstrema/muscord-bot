@@ -31,10 +31,10 @@ Additionnal commands include:
  - \`/restart\`: Recreate the discord bot client.
  - \`/delete n\`: Delete the last n messages. Use without n to delete only the last one.
  - \`/set target value\`: Set a parameter (\`target\`) to \`value\`. Available parameters are:
-    - \`minmsissue_number (default value: \`100\`): The minimum issue number required in #number before linking to an issue on musescore.org.
+    - \`minmsissue_number\` (default value: \`100\`): The minimum issue number required in #number before linking to an issue on musescore.org.
     - \`minghissue_number (default value: \`100\`): The minimum issue number required in #number before linking to an issue on github.
     - \`minpr_number\` (default value: \`0\`): The minimum number required in pr#number before linking it.
-    - \`timebeforedelete_number\` (default value: \`10000\`): some of this bots' messages autodelete after some time. Use this value (in ms) to configure it.
+    - \`timebeforedelete_number\` (default value: \`10000\`): some of this bot's messages autodelete after some time. Use this value (in ms) to configure it.
     - \`muted_bool\` (default value: \`false\`): Whether the bot is muted. See also \`/mute\` and \`/unmute\`.
 
 If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
@@ -180,7 +180,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
             });
             return;
         }
-        if (msg.content.toLowerCase().includes("interesting") && msg.author.id !== client.user.id) {
+        if (msg.content.toLowerCase().includes("interesting...") && msg.author.id !== client.user.id) {
             send(msg.channel, ["This certainly is interesting...", "very... interesting", "how interesting..."]
             .map((m) => { return m + "\nhttps://en.wikipedia.org/wiki/Special:Random"}));
         }
@@ -199,7 +199,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
         if (containsOneIn(msg.content, ["Thank you", "Merci", "Danke", "Gracias"]) && msg.author.id !== client.user.id) {
             send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:", "De nada", "El placer es mio", "De rien", "Je suis la pour vous servir..."]);
         }
-        if (containsOneIn(msg.content, ["musebot"])) {
+        if (containsOneIn(msg.content, ["@musebot"])) {
             reply(msg, ["... Well that's fun...", "Now that the truth is uncovered...", "Just who exactly do you think I am?", "That is your opinion.", "Wow that's so... meaningful!", "Could you guys please ban him?", "Hey I am not some kind of mere robot!"])
         }
         if (params.muted_bool) {
