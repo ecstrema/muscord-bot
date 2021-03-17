@@ -28,6 +28,7 @@ webhooks.onAny(({ id, name, payload }) => {
         newsChannel.send(name + " event received");
         switch (name) {
             case "push":
+                //
                 newsChannel.send(`New Pull Request: ${payload.pull_request.number} - ${payload.pull_request.title} by ${payload.pull_request.user.login}\n${payload.pull_request.html_url}`);
                 break;
 
