@@ -183,7 +183,14 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
         if (msg.content.toLowerCase().includes("interesting") && msg.author.id !== client.user.id) {
             send(msg.channel, ["This certainly is interesting...", "very... interesting", "how interesting..."]
             .map((m) => { return m + "\nhttps://en.wikipedia.org/wiki/Special:Random"}));
-            return;
+        }
+        if (msg.content.toLowerCase().includes("beautiful") && msg.author.id !== client.user.id) {
+            send(msg.channel, ["This certainly is beautiful...", "very... beautiful", "how beautiful..."]
+            .map((m) => { return m + "\nhttps://source.unsplash.com/featured/?future?sig=" + Math.floor(Math.random() * 1000000)}));
+        }
+        if (msg.content.toLowerCase().includes("random") && msg.author.id !== client.user.id) {
+            send(msg.channel, ["This certainly is random...", "very... random", "how random..."]
+            .map((m) => { return m + "\nhttps://source.unsplash.com/featured/?rock?sig=" + Math.floor(Math.random() * 1000000)}));
         }
         if (isOneIn(msg.content, ["Thank you", "Merci", "Danke"]) && msg.author.id !== client.user.id) {
             send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:"]);
