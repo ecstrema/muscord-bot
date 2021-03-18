@@ -448,7 +448,7 @@ function containsOneIn(str, array) {
 }
 
 function fetchChannel() {
-    client.channels.fetch('821194544825237518')
+    client.channels.fetch('818804595450445837')
         .then((channel) => {
             newsChannel = channel;
             console.log("Pushing news to: " + channel.name);
