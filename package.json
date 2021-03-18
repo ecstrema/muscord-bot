@@ -13,12 +13,11 @@
     "@octokit/webhooks": "^8.5.4",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "slash-commands": "^1.4.0",
+    "tweetnacl": "^1.0.3"
   },
   "engines": {
     "node": "12.x"
-  },
-  "devDependencies": {
-    "eventsource": "^1.0.7"
   }
 }

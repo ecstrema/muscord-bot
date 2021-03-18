@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
+const nacl = require('tweetnacl');
+const { DiscordInteractions } = require("slash-commands");
 
 // initialize dotenv
 require('dotenv').config();
@@ -12,18 +14,27 @@ var newsChannel = null;
 client.on('ready', () => {
     console.log('Bot is ready');
     fetchChannel();
+
+    try {
+        initCommands()
+    } catch (error) {
+        console.log(error);
+    }
 });
 
 // install with: npm install @octokit/webhooks
 const { Webhooks } = require("@octokit/webhooks");
+const { resolveOverwriteOptions } = require('discord.js/src/structures/PermissionOverwrites');
 
 require('dotenv').config();
 
 const webhooks = new Webhooks({
   secret: process.env.WEBHOOK_TOKEN,
+  path: "/github"
 });
 
 webhooks.onAny((m) => {
+    console.log('here');
     if (newsChannel) {
         newsChannel.send(m.name + " event received");
         if (m.name === "push") {
@@ -47,7 +58,7 @@ webhooks.onAny((m) => {
             return;
         }
 
-        if (m.name === "watch") {
+        if (m.name === "watch" || m.name === "star") {
             const stars = m.payload.repository.watchers_count;
             if (!stars % 1000) {
                 newsChannel.send(`We reached ${stars} stars in the ${m.payload.repository.name} repo!`)
@@ -83,8 +94,59 @@ webhooks.onAny((m) => {
     }
 });
 
-require("http").createServer(webhooks.middleware).listen(3000);
+require("http").createServer((req, res) => {
+    if (req.url === "/github") {
+        webhooks.middleware(req, res);
+        return;
+    }
+    else if (req.url === "/discord") {
+        // The public key can be found on your application in the Developer Portal
+        const PUBLIC_KEY = '02da8fc1549bb4f83c88488bc9c7df5a7ae863a9b903b3e6673af88d324a6df5';
+
+        const signature = req.headers['x-signature-ed25519'];
+        const timestamp = req.headers['x-signature-timestamp'];
+        let body = [];
+        req.on('data', (chunk) => {
+            body.push(chunk);
+        });
+        req.on("end", () => {
+            body = Buffer.concat(body).toString();
+
+            const isVerified = nacl.sign.detached.verify(
+                Buffer.from(timestamp + body),
+                Buffer.from(signature, 'hex'),
+                Buffer.from(PUBLIC_KEY, 'hex')
+            );
+            body = JSON.parse(body);
+
+            if (!isVerified) {
+                console.log("invalid signature");
+                res.statusCode = 401
+                res.end('invalid request signature');
+                return;
+            }
+
+            // respond to ping request.
+            if (body.type === 1) {
+                res.setHeader('Content-Type', 'application/json');
+                res.end(
+                  JSON.stringify({
+                    type: 1,
+                  }),
+                );
+                initCommands();
+                return;
+            }
+
+            res.end();
+            // Note: the 2 lines above could be replaced with this next one:
+            // response.end(JSON.stringify(responseBody))
+        })
+
+    }
+}).listen(3000);
 // can now receive webhook events at port 3000
+
 
 let params = {
     muted_bool: false,
@@ -393,4 +455,21 @@ function fetchChannel() {
             console.log("Pushing news to: " + channel.name);
         })
         .catch(console.error);
+}
+
+async function initCommands() {
+    const interaction = new DiscordInteractions({
+        applicationId: "821194769941790740",
+        authToken: process.env.BOT_TOKEN,
+        publicKey: "02da8fc1549bb4f83c88488bc9c7df5a7ae863a9b903b3e6673af88d324a6df5",
+      });
+
+    const wakeup = {
+        "name": "wakeup",
+        "description": "Wake up a sleeping musebot"
+      }
+    const commands = await interaction.getApplicationCommands();
+    if (!commands[0].name === "wakeup") {
+        await interaction.createApplicationCommand(wakeup, "821531129382305814").then(console.log).catch(console.error);
+    }
 }
