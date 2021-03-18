@@ -35,8 +35,8 @@ const webhooks = new Webhooks({
 
 webhooks.onAny((m) => {
     if (newsChannel) {
-        newsChannel.send(m.name + " event received");
         if (m.name === "push") {
+            return;
             if (!m.payload.commits.length) return;
 
             const branch = m.payload.ref.replace("refs/heads/", "");
@@ -53,7 +53,9 @@ webhooks.onAny((m) => {
         }
 
         if (m.name === "pull_request") {
-            newsChannel.send(`New Pull Request: ${m.payload.pull_request.number} - ${m.payload.pull_request.title} by ${m.payload.pull_request.user.login}\n${m.payload.pull_request.html_url}`);
+            if (m.payload.action === "opened") {
+                newsChannel.send(`New Pull Request: ${m.payload.pull_request.number} - ${m.payload.pull_request.title} by ${m.payload.pull_request.user.login}\n${m.payload.pull_request.html_url}`);
+            }
             return;
         }
 
@@ -85,8 +87,8 @@ webhooks.onAny((m) => {
 
             return;
         }
-
-        newsChannel.send("Received unknown event from github: " + m.name);
+        console.log("Received unknown event from github: " + m.name);
+        // newsChannel.send("Received unknown event from github: " + m.name);
     }
     else {
         fetchChannel();
@@ -448,7 +450,7 @@ function containsOneIn(str, array) {
 }
 
 function fetchChannel() {
-    client.channels.fetch('818804595450445837')
+    client.channels.fetch('818848130027880479')
         .then((channel) => {
             newsChannel = channel;
             console.log("Pushing news to: " + channel.name);
