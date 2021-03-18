@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
 const nacl = require('tweetnacl');
-const { DiscordInteractions } = require("slash-commands");
+// const { DiscordInteractions } = require("slash-commands");
 
 // initialize dotenv
 require('dotenv').config();
@@ -34,7 +34,6 @@ const webhooks = new Webhooks({
 });
 
 webhooks.onAny((m) => {
-    console.log('here');
     if (newsChannel) {
         newsChannel.send(m.name + " event received");
         if (m.name === "push") {
