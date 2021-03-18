@@ -43,7 +43,6 @@ webhooks.onAny((m) => {
         }
 
         if (m.name === "pull_request") {
-            console.log(m.payload);
             newsChannel.send(`New Pull Request: ${m.payload.pull_request.number} - ${m.payload.pull_request.title} by ${m.payload.pull_request.user.login}\n${m.payload.pull_request.html_url}`);
             return;
         }
@@ -61,6 +60,19 @@ webhooks.onAny((m) => {
             if (!forks % 1000) {
                 newsChannel.send(`We reached ${forks} forks in the ${m.payload.repository.name} repo!`)
             }
+            return;
+        }
+
+        if (m.name === "meta") {
+            newsChannel.send("My github hook was deleted. :sad: I will not be able to receive any more news from my friends out there.")
+            return;
+        }
+
+        if (m.name === "issues") {
+            if (m.payload.action === "opened") {
+                newsChannel.send(`${m.payload.issue.user.login} opened an issue: ${m.payload.issue.title}\n${m.payload.issue.url}`)
+            }
+
             return;
         }
 
