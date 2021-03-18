@@ -458,18 +458,20 @@ function fetchChannel() {
 }
 
 async function initCommands() {
-    const interaction = new DiscordInteractions({
-        applicationId: "821194769941790740",
-        authToken: process.env.BOT_TOKEN,
-        publicKey: "02da8fc1549bb4f83c88488bc9c7df5a7ae863a9b903b3e6673af88d324a6df5",
-      });
+    // disable slash commands
 
-    const wakeup = {
-        "name": "wakeup",
-        "description": "Wake up a sleeping musebot"
-      }
-    const commands = await interaction.getApplicationCommands();
-    if (!commands[0].name === "wakeup") {
-        await interaction.createApplicationCommand(wakeup, "821531129382305814").then(console.log).catch(console.error);
-    }
+    // const interaction = new DiscordInteractions({
+    //     applicationId: "821194769941790740",
+    //     authToken: process.env.BOT_TOKEN,
+    //     publicKey: "02da8fc1549bb4f83c88488bc9c7df5a7ae863a9b903b3e6673af88d324a6df5",
+    //   });
+
+    // const wakeup = {
+    //     "name": "wakeup",
+    //     "description": "Wake up a sleeping musebot"
+    //   }
+    // const commands = await interaction.getApplicationCommands();
+    // if (!commands[0].name === "wakeup") {
+    //     await interaction.createApplicationCommand(wakeup, "821531129382305814").then(console.log).catch(console.error);
+    // }
 }
