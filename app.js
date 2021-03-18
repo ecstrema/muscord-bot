@@ -56,6 +56,9 @@ webhooks.onAny((m) => {
             if (m.payload.action === "opened") {
                 newsChannel.send(`New Pull Request: ${m.payload.pull_request.number} - ${m.payload.pull_request.title} by ${m.payload.pull_request.user.login}\n${m.payload.pull_request.html_url}`);
             }
+            else if (m.payload.action === "closed") {
+                newsChannel.send(`${m.payload.issue.user.login} closed a PR: ${m.payload.pull_request.title}\n${m.payload.issue.url}`)
+            }
             return;
         }
 
@@ -84,8 +87,34 @@ webhooks.onAny((m) => {
             if (m.payload.action === "opened") {
                 newsChannel.send(`${m.payload.issue.user.login} opened an issue: ${m.payload.issue.title}\n${m.payload.issue.url}`)
             }
-
             return;
+        }
+
+        if (m.name === "milestone") {
+            if (isOneIn(m.payload.action, ["opened"])) {
+                newsChannel.send(`${m.payload.sender.login} created a milestone: ${m.payload.milestone.title}\n${m.payload.issue.url}`)
+            }
+            return;
+        }
+
+        if (m.name === "release") {
+            if (isOneIn(m.payload.action, ["published"])) {
+                newsChannel.send(`${m.payload.sender.login} published a release!\n${m.payload.issue.url}`)
+            }
+            return;
+        }
+        if (m.name === "secret_scanning_alert") {
+            client.fetchUser('820950138125156353', false).then((user) => {
+                if (m.payload.action === "created") {
+                    user.send('A secret was uncovered: ' + m.payload.alert.secret_type);
+                }
+                else if (m.payload.action === "resolved") {
+                    user.send('The leaked secret (' + m.payload.alert.secret_type + ") alert has been resolved.");
+                }
+                else if (m.payload.action === "reopened") {
+                    user.send('A secret leaked again: ' + m.payload.alert.secret_type);
+                }
+               });
         }
         console.log("Received unknown event from github: " + m.name);
         // newsChannel.send("Received unknown event from github: " + m.name);
