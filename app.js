@@ -57,7 +57,7 @@ webhooks.onAny((m) => {
                 newsChannel.send(`New Pull Request: ${m.payload.pull_request.number} - ${m.payload.pull_request.title} by ${m.payload.pull_request.user.login}\n${m.payload.pull_request.html_url}`);
             }
             else if (m.payload.action === "closed") {
-                newsChannel.send(`${m.payload.issue.user.login} closed a PR: ${m.payload.pull_request.title}\n${m.payload.issue.url}`)
+                newsChannel.send(`This PR was closed: ${m.payload.pull_request.title}\n${m.payload.pull_request.html_url}`)
             }
             return;
         }
