@@ -104,6 +104,7 @@ webhooks.onAny((m) => {
             return;
         }
         if (m.name === "secret_scanning_alert") {
+            // Notify Igor Korsukov. Anyone else to notify?
             client.fetchUser('820950138125156353', false).then((user) => {
                 if (m.payload.action === "created") {
                     user.send('A secret was uncovered: ' + m.payload.alert.secret_type);
