@@ -34,94 +34,150 @@ const webhooks = new Webhooks({
 });
 
 webhooks.onAny((m) => {
-    if (newsChannel) {
-        if (m.name === "push") {
-            return;
-            if (!m.payload.commits.length) return;
+    try {
+        if (newsChannel) {
+            if (m.name === "push") {
+                return;
+                if (!m.payload.commits.length) return;
 
-            const branch = m.payload.ref.replace("refs/heads/", "");
-            const message = m.payload.commits[0].message.slice(0, 70);
-            const link = m.payload.commits[0].url
+                const branch = m.payload.ref.replace("refs/heads/", "");
+                const message = m.payload.commits[0].message.slice(0, 70);
+                const link = m.payload.commits[0].url
 
-            if (m.payload.commits.length > 1) {
-                newsChannel.send(`${m.payload.pusher.name} pushed ${m.payload.commits.length} commits to ${branch}, including ${message}\n${link}`);
-            }
-            else {
-                newsChannel.send(`${m.payload.pusher.name} pushed commit to ${branch}: ${message}\n${link}`);
-            }
-            return;
-        }
-
-        if (m.name === "pull_request") {
-            if (m.payload.action === "opened") {
-                newsChannel.send(`New Pull Request: ${m.payload.pull_request.number} - ${m.payload.pull_request.title} by ${m.payload.pull_request.user.login}\n${m.payload.pull_request.html_url}`);
-            }
-            else if (m.payload.action === "closed") {
-                newsChannel.send(`This PR was closed: ${m.payload.pull_request.title}\n${m.payload.pull_request.html_url}`)
-            }
-            return;
-        }
-
-        if (m.name === "watch" || m.name === "star") {
-            const stars = m.payload.repository.watchers_count;
-            if (!stars % 1000) {
-                newsChannel.send(`We reached ${stars} stars in the ${m.payload.repository.name} repo!`)
-            }
-            return;
-        }
-
-        if (m.name === "fork") {
-            const forks = m.payload.repository.forks_count;
-            if (!forks % 1000) {
-                newsChannel.send(`We reached ${forks} forks in the ${m.payload.repository.name} repo!`)
-            }
-            return;
-        }
-
-        if (m.name === "meta") {
-            newsChannel.send("My github hook was deleted. :sad: I will not be able to receive any more news from my friends out there.")
-            return;
-        }
-
-        if (m.name === "issues") {
-            if (m.payload.action === "opened") {
-                newsChannel.send(`${m.payload.issue.user.login} opened an issue: ${m.payload.issue.title}\n${m.payload.issue.url}`)
-            }
-            return;
-        }
-
-        if (m.name === "milestone") {
-            if (isOneIn(m.payload.action, ["opened"])) {
-                newsChannel.send(`${m.payload.sender.login} created a milestone: ${m.payload.milestone.title}\n${m.payload.issue.url}`)
-            }
-            return;
-        }
-
-        if (m.name === "release") {
-            if (isOneIn(m.payload.action, ["published"])) {
-                newsChannel.send(`${m.payload.sender.login} published a release!\n${m.payload.issue.url}`)
-            }
-            return;
-        }
-        if (m.name === "secret_scanning_alert") {
-            // Notify Igor Korsukov. Anyone else to notify?
-            client.fetchUser('820950138125156353', false).then((user) => {
-                if (m.payload.action === "created") {
-                    user.send('A secret was uncovered: ' + m.payload.alert.secret_type);
+                if (m.payload.commits.length > 1) {
+                    newsChannel.send(`${m.payload.pusher.name} pushed ${m.payload.commits.length} commits to ${branch}, including ${message}\n${link}`);
                 }
-                else if (m.payload.action === "resolved") {
-                    user.send('The leaked secret (' + m.payload.alert.secret_type + ") alert has been resolved.");
+                else {
+                    newsChannel.send(`${m.payload.pusher.name} pushed commit to ${branch}: ${message}\n${link}`);
+                }
+                return;
+            }
+
+            if (m.name === "pull_request") {
+                const user = m.payload.pull_request.user;
+                const pr = m.payload.pull_request;
+                const embed = new Discord.MessageEmbed();
+                embed.setColor('#0099ff');
+                embed.setAuthor(user.login, user.avatar_url, user.html_url);
+                // embed.setTimestamp();
+                if (m.payload.action === "opened") {
+                    embed.setTitle("New Pull Request - " + pr.title);
+                    embed.setDescription(`[\`#${pr.number}\`](${pr.html_url} '${pr.body}')\n\n${pr.body}`);
+                    newsChannel.send(embed);
+                }
+                else if (m.payload.action === "closed") {
+                    if (m.payload.pull_request.merged) {
+                        return; // The PR was merged. The discord github bot will take care of notifications.
+                    }
+                    embed.setTitle("PR Closed - " + pr.title);
+                    embed.setDescription(`[\`${pr.number}\`](${pr.html_url} '${pr.body}')`);
+                    newsChannel.send(embed);
                 }
                 else if (m.payload.action === "reopened") {
-                    user.send('A secret leaked again: ' + m.payload.alert.secret_type);
+                    embed.setTitle("PR Reopened - " + pr.title);
+                    embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
+                    newsChannel.send(embed);
                 }
-               });
+                return;
+            }
+
+            if (m.name === "member") {
+                if (m.payload.action === "added") {
+                    const user = m.payload.member;
+                    const embed = new Discord.MessageEmbed();
+                    embed.setColor('#0099ff');
+                    embed.setAuthor(user.login, user.avatar_url, user.html_url);
+                    embed.setDescription(`Congrats to ${user.login} for being a new contributor to the ${m.payload.repository.name} repository!\n:partying_face::love_you_gesture:`)
+                }
+                return;
+            }
+
+            if (m.name === "ping") {
+                newsChannel.send("Github sent me this weird sentence:");
+                newsChannel.send(m.payload.zen);
+                newsChannel.send("What do you think it means?");
+                setTimeout(() => {
+                    newsChannel.send("After confirmation with github, it looks like we will be receiving news from a new repo: " + m.payload.repository.full_name + ". Wow. That's amazing.")
+                }, 10000)
+                return;
+            }
+
+            if (m.name === "star") {
+                const stars = m.payload.repository.stargazers_count;
+                if (!stars % 1000) {
+                    newsChannel.send(`We reached ${stars} stars in the ${m.payload.repository.name} repo!`)
+                }
+                return;
+            }
+
+            if (m.name === "watch") {
+                const stars = m.payload.repository.watchers_count;
+                if (!stars % 1000) {
+                    newsChannel.send(`We reached ${stars} watchers in the ${m.payload.repository.name} repo!`)
+                }
+                return;
+            }
+
+            if (m.name === "fork") {
+                const forks = m.payload.repository.forks_count;
+                if (!forks % 1000) {
+                    newsChannel.send(`We reached ${forks} forks in the ${m.payload.repository.name} repo!`)
+                }
+                return;
+            }
+
+            if (m.name === "meta") {
+                newsChannel.send("My github hook was deleted. :sad: I will not be able to receive any more news from my friends out there.")
+                return;
+            }
+
+            if (m.name === "issues") {
+                if (m.payload.action === "opened") {
+                    newsChannel.send(`${m.payload.issue.user.login} opened an issue: ${m.payload.issue.title}\n${m.payload.issue.html_url}`)
+                }
+                return;
+            }
+
+            if (m.name === "milestone") {
+                if (isOneIn(m.payload.action, ["opened"])) {
+                    newsChannel.send(`${m.payload.sender.login} created a milestone: ${m.payload.milestone.title}\n${m.payload.issue.html_url}`)
+                }
+                return;
+            }
+
+            if (m.name === "release") {
+                if (isOneIn(m.payload.action, ["published"])) {
+                    newsChannel.send(`${m.payload.sender.login} published a release!\n${m.payload.issue.html_url}`)
+                }
+                return;
+            }
+            if (m.name === "secret_scanning_alert") {
+                // Notify Igor Korsukov. Anyone else to notify?
+                client.fetchUser('820950138125156353', false).then((user) => {
+                    if (m.payload.action === "created") {
+                        user.send('A secret was uncovered: ' + m.payload.alert.secret_type);
+                    }
+                    else if (m.payload.action === "resolved") {
+                        user.send('The leaked secret (' + m.payload.alert.secret_type + ") alert has been resolved.");
+                    }
+                    else if (m.payload.action === "reopened") {
+                        user.send('A secret leaked again: ' + m.payload.alert.secret_type);
+                    }
+                });
+            }
+
+            if (isOneIn(m.name, ["check_run", "check_suite"])) {
+                return; // these events are not useful to us.
+            }
+            console.log("Received unknown event from github: " + m.name);
+            // newsChannel.send("Received unknown event from github: " + m.name);
         }
-        console.log("Received unknown event from github: " + m.name);
-        // newsChannel.send("Received unknown event from github: " + m.name);
+        else {
+            fetchChannel();
+        }
     }
-    else {
-        fetchChannel();
+    catch (e) {
+        console.error(e);
     }
 });
 
@@ -480,6 +536,10 @@ function containsOneIn(str, array) {
 }
 
 function fetchChannel() {
+    // testing
+    // client.channels.fetch('821194544825237518')
+
+    // actual Musescore channel
     client.channels.fetch('818848130027880479')
         .then((channel) => {
             newsChannel = channel;
@@ -488,8 +548,11 @@ function fetchChannel() {
         .catch(console.error);
 }
 
+
+
 async function initCommands() {
     // disable slash commands
+    return;
 
     // const interaction = new DiscordInteractions({
     //     applicationId: "821194769941790740",
