@@ -245,7 +245,7 @@ let params = {
     minpr_number: 0,
     minmsissue_number: 100,
     minghissue_number: 0,
-    timebeforedelete_number: 10000,
+    timebeforedelete_number: 5000,
 }
 
 client.on('message', (msg) => {
