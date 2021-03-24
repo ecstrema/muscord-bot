@@ -59,10 +59,13 @@ webhooks.onAny((m) => {
                 const embed = new Discord.MessageEmbed();
                 embed.setColor('#0099ff');
                 embed.setAuthor(user.login, user.avatar_url, user.html_url);
+                embed.setURL(pr.html_url);
+                embed.setThumbnail("https://img.icons8.com/ios/452/pull-request.png");
+                embed.setImage("https://img.icons8.com/ios/452/pull-request.png");
                 // embed.setTimestamp();
                 if (m.payload.action === "opened") {
                     embed.setTitle("New Pull Request - " + pr.title);
-                    embed.setDescription(`[\`#${pr.number}\`](${pr.html_url} '${pr.body}')\n\n${pr.body}`);
+                    embed.setDescription(`[\`#${pr.number}\`](${pr.html_url} 'View on github')\n\n${pr.body}`);
                     newsChannel.send(embed);
                 }
                 else if (m.payload.action === "closed") {
@@ -93,18 +96,18 @@ webhooks.onAny((m) => {
             }
 
             if (m.name === "ping") {
-                newsChannel.send("Github sent me this weird sentence:");
-                newsChannel.send(m.payload.zen);
+                newsChannel.send("Github sent me this weird thing:");
+                newsChannel.send(`"${m.payload.zen}"`);
                 newsChannel.send("What do you think it means?");
                 setTimeout(() => {
-                    newsChannel.send("After confirmation with github, it looks like we will be receiving news from a new repo: " + m.payload.repository.full_name + ". Wow. That's amazing.")
+                    newsChannel.send("After confirmation with the folks at Github, it looks like we will be receiving news from a new repo: " + m.payload.repository.full_name + ". Wow. That's amazing.")
                 }, 10000)
                 return;
             }
 
             if (m.name === "star") {
                 const stars = m.payload.repository.stargazers_count;
-                if (!stars % 1000) {
+                if (!(stars % 1000)) {
                     newsChannel.send(`We reached ${stars} stars in the ${m.payload.repository.name} repo!`)
                 }
                 return;
@@ -112,7 +115,7 @@ webhooks.onAny((m) => {
 
             if (m.name === "watch") {
                 const stars = m.payload.repository.watchers_count;
-                if (!stars % 1000) {
+                if (!(stars % 1000)) {
                     newsChannel.send(`We reached ${stars} watchers in the ${m.payload.repository.name} repo!`)
                 }
                 return;
@@ -120,7 +123,7 @@ webhooks.onAny((m) => {
 
             if (m.name === "fork") {
                 const forks = m.payload.repository.forks_count;
-                if (!forks % 1000) {
+                if (!(forks % 1000)) {
                     newsChannel.send(`We reached ${forks} forks in the ${m.payload.repository.name} repo!`)
                 }
                 return;
@@ -132,6 +135,8 @@ webhooks.onAny((m) => {
             }
 
             if (m.name === "issues") {
+                // embed.setImage(http://cdn.onlinewebfonts.com/svg/img_2382.png);
+                // embed.setThumbnail(http://cdn.onlinewebfonts.com/svg/img_2382.png);
                 if (m.payload.action === "opened") {
                     newsChannel.send(`${m.payload.issue.user.login} opened an issue: ${m.payload.issue.title}\n${m.payload.issue.html_url}`)
                 }
@@ -208,7 +213,7 @@ require("http").createServer((req, res) => {
 
             if (!isVerified) {
                 console.log("invalid signature");
-                res.statusCode = 401
+                res.statusCode = 401;
                 res.end('invalid request signature');
                 return;
             }
@@ -261,6 +266,8 @@ Additionnal commands include:
     * \`minpr_number\` (default value: \`0\`): The minimum number required in pr#number before linking it.
     * \`timebeforedelete_number\` (default value: \`10000\`): some of this bot's messages autodelete after some time. Use this value (in ms) to configure it.
     * \`muted_bool\` (default value: \`false\`): Whether the bot is muted. See also \`/mute\` and \`/unmute\`.
+
+Note that you can always wake me up by visiting https://musebot-discord.glitch.me.
 
 If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
 `)
@@ -414,7 +421,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
                 "This certainly is interesting...",
                 "very... interesting",
                 "how interesting..."
-                ])
+                ]);
         }
         if (msg.content.toLowerCase().includes("beautiful") && msg.author.id !== client.user.id) {
           linkRandomPages(msg, "https://source.unsplash.com/featured/?future",
@@ -422,7 +429,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
               "This certainly is beautiful...",
               "very... beautiful",
               "how beautiful..."
-              ])
+              ]);
         }
         if (msg.content.toLowerCase().includes("random") && msg.author.id !== client.user.id) {
           linkRandomPages(msg, "https://source.unsplash.com/featured/?rock",
@@ -430,8 +437,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
               "This certainly is random...",
               "very... random",
               "how random..."
-              ])
-
+              ]);
         }
         if (isOneIn(msg.content, ["Thank you", "Merci", "Danke"]) && msg.author.id !== client.user.id) {
             send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:"]);
@@ -440,8 +446,14 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
         if (isOneIn(msg.content, ["Thank you", "Merci", "Danke", "Gracias"]) && msg.author.id !== client.user.id) {
             send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:", "De nada", "El placer es mio", "De rien", "Je suis la pour vous servir..."]);
         }
-        if (containsOneIn(msg.content, ["@musebot"])) {
+        if (containsOneIn(msg.content.toLowerCase(), ["musebot", "musescord"])) {
             reply(msg, ["... Well that's fun...", "Now that the truth is uncovered...", "Just who exactly do you think I am?", "That is your opinion.", "Wow that's so... meaningful!", "Could you guys please ban him?", "Hey I am not some kind of mere robot!"])
+        }
+        if (containsOneIn(msg.content.toLowerCase(), ["robot"])) {
+            reply(msg, ["Speaking 'bout robots?", "Did someone say robot?", "Did I just hear robot?"]);
+        }
+        if (containsOneIn(msg.content.toLowerCase(), ["stackoverflow", "stack overflow"])) {
+            reply(msg, ["https://ahseeit.com//king-include/uploads/2021/01/125920649_1067274367017645_4260770275982334374_n-5042670445.jpg", "https://ahseeit.com//king-include/uploads/2021/02/97526840_701585793923629_6447559898216910734_n-4207642023.jpg", "Yeah me too I love stack overflow.", "https://ahseeit.com//king-include/uploads/2021/01/75458008_176992410096750_8646005410414874101_n-9825644198.jpg", "https://ahseeit.com//king-include/uploads/2021/01/121828819_3394846430607680_6583390831866418771_n-2074747303.jpg", "https://ahseeit.com//king-include/uploads/2021/01/131894480_228511955346726_3797468041544343565_n-431975422.jpg"])
         }
         if (msg.author.id !== client.user.id) {
             let content = msg.content.replace(/ +/g, '');;
