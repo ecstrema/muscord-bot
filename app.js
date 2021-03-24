@@ -412,6 +412,10 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
         if (params.muted_bool) {
             return;
         }
+        if (msg.content.startsWith('/expelliarmus') && msg.author.id !== client.user.id) {
+            reply(msg, ["Avada Kedavra!", "Alohomora!", "Arania Exumai"]);
+            return;
+        }
         if (msg.content.toLowerCase().includes("interesting...") && msg.author.id !== client.user.id) {
             linkRandomPages(msg, "https://en.wikipedia.org/wiki/Special:Random",
                 [
@@ -435,10 +439,6 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
               "very... random",
               "how random..."
               ]);
-        }
-        if (isOneIn(msg.content, ["Thank you", "Merci", "Danke"]) && msg.author.id !== client.user.id) {
-            send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:"]);
-            return;
         }
         if (isOneIn(msg.content, ["Thank you", "Merci", "Danke", "Gracias"]) && msg.author.id !== client.user.id) {
             send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:", "De nada", "El placer es mio", "De rien", "Je suis la pour vous servir..."]);
