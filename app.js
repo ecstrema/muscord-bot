@@ -61,8 +61,6 @@ webhooks.onAny((m) => {
                 embed.setAuthor(user.login, user.avatar_url, user.html_url);
                 embed.setURL(pr.html_url);
                 embed.setThumbnail("https://img.icons8.com/ios/452/pull-request.png");
-                embed.setImage("https://img.icons8.com/ios/452/pull-request.png");
-                // embed.setTimestamp();
                 if (m.payload.action === "opened") {
                     embed.setTitle("New Pull Request - " + pr.title);
                     embed.setDescription(`[\`#${pr.number}\`](${pr.html_url} 'View on github')\n\n${pr.body}`);
@@ -135,7 +133,6 @@ webhooks.onAny((m) => {
             }
 
             if (m.name === "issues") {
-                // embed.setImage(http://cdn.onlinewebfonts.com/svg/img_2382.png);
                 // embed.setThumbnail(http://cdn.onlinewebfonts.com/svg/img_2382.png);
                 if (m.payload.action === "opened") {
                     newsChannel.send(`${m.payload.issue.user.login} opened an issue: ${m.payload.issue.title}\n${m.payload.issue.html_url}`)
