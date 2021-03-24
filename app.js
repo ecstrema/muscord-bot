@@ -443,13 +443,13 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
         if (isOneIn(msg.content, ["Thank you", "Merci", "Danke", "Gracias"]) && msg.author.id !== client.user.id) {
             send(msg.channel, ["You're Welcome", "It's a pleasure", "Wow that's kind", ":heart:", "De nada", "El placer es mio", "De rien", "Je suis la pour vous servir..."]);
         }
-        if (containsOneIn(msg.content.toLowerCase(), ["musebot", "musescord"])) {
+        if (containsOneIn(msg.content.toLowerCase(), ["@musebot", "discord bot"]) && msg.author.id !== client.user.id) {
             reply(msg, ["... Well that's fun...", "Now that the truth is uncovered...", "Just who exactly do you think I am?", "That is your opinion.", "Wow that's so... meaningful!", "Could you guys please ban him?", "Hey I am not some kind of mere robot!"])
         }
-        if (containsOneIn(msg.content.toLowerCase(), ["robot"])) {
+        if (containsOneIn(msg.content.toLowerCase(), ["robot"]) && msg.author.id !== client.user.id) {
             reply(msg, ["Speaking 'bout robots?", "Did someone say robot?", "Did I just hear robot?"]);
         }
-        if (containsOneIn(msg.content.toLowerCase(), ["stackoverflow", "stack overflow"])) {
+        if (containsOneIn(msg.content.toLowerCase(), ["stackoverflow", "stack overflow"]) && msg.author.id !== client.user.id) {
             reply(msg, ["https://ahseeit.com//king-include/uploads/2021/01/125920649_1067274367017645_4260770275982334374_n-5042670445.jpg", "https://ahseeit.com//king-include/uploads/2021/02/97526840_701585793923629_6447559898216910734_n-4207642023.jpg", "Yeah me too I love stack overflow.", "https://ahseeit.com//king-include/uploads/2021/01/75458008_176992410096750_8646005410414874101_n-9825644198.jpg", "https://ahseeit.com//king-include/uploads/2021/01/121828819_3394846430607680_6583390831866418771_n-2074747303.jpg", "https://ahseeit.com//king-include/uploads/2021/01/131894480_228511955346726_3797468041544343565_n-431975422.jpg"])
         }
         if (msg.author.id !== client.user.id) {
