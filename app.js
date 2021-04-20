@@ -86,6 +86,16 @@ webhooks.onAny((m) => {
                 }
                 return;
             }
+            if (m.name === "pull_request_review") {
+                if (m.payload.action === "submitted") {
+                    const user = m.payload.member;
+                    const embed = new Discord.MessageEmbed();
+                    embed.setColor('#0099ff');
+                    embed.setAuthor(user.login, user.avatar_url, user.html_url);
+                    embed.setDescription(`${m.payload.sender.login} submitted a review for pr: ${m.payload.pull_request.title}\n${m.payload.review.html_url}`);
+                }
+                return;
+            }
 
             if (m.name === "member") {
                 if (m.payload.action === "added") {
