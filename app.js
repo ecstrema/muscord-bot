@@ -54,8 +54,8 @@ webhooks.onAny((m) => {
             }
 
             if (m.name === "pull_request") {
-                const user = m.payload.pull_request.user;
                 const pr = m.payload.pull_request;
+                const user = pr.user;
                 const embed = new Discord.MessageEmbed();
                 embed.setColor('#0099ff');
                 embed.setAuthor(user.login, user.avatar_url, user.html_url);
@@ -64,35 +64,36 @@ webhooks.onAny((m) => {
                 if (m.payload.action === "opened") {
                     embed.setTitle("New Pull Request - " + pr.title);
                     embed.setDescription(`[\`#${pr.number}\`](${pr.html_url} 'View on github')\n\n${pr.body}`);
-                    newsChannel.send(embed);
                 }
                 else if (m.payload.action === "closed") {
-                    if (m.payload.pull_request.merged) {
+                    if (pr.merged) {
                         return; // The PR was merged. The discord github bot will take care of notifications.
                     }
                     embed.setTitle("PR Closed - " + pr.title);
                     embed.setDescription(`[\`${pr.number}\`](${pr.html_url} '${pr.body}')`);
-                    newsChannel.send(embed);
                 }
                 else if (m.payload.action === "reopened") {
                     embed.setTitle("PR Reopened - " + pr.title);
                     embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
-                    newsChannel.send(embed);
                 }
                 else if (m.payload.action === "ready_for_review") {
                     embed.setTitle("PR Ready for review - " + pr.title);
                     embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
-                    newsChannel.send(embed);
                 }
+                newsChannel.send(embed);
                 return;
             }
             if (m.name === "pull_request_review") {
                 if (m.payload.action === "submitted") {
                     const user = m.payload.member;
+                    const pr = m.payload.pull_request;
+
                     const embed = new Discord.MessageEmbed();
                     embed.setColor('#0099ff');
                     embed.setAuthor(user.login, user.avatar_url, user.html_url);
-                    embed.setDescription(`${m.payload.sender.login} submitted a review for pr: ${m.payload.pull_request.title}\n${m.payload.review.html_url}`);
+                    embed.setURL(m.payload.review.html_url);
+                    embed.setDescription(`New review for [PR#\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
+                    newsChannel.send(embed);
                 }
                 return;
             }
@@ -104,6 +105,7 @@ webhooks.onAny((m) => {
                     embed.setColor('#0099ff');
                     embed.setAuthor(user.login, user.avatar_url, user.html_url);
                     embed.setDescription(`Congrats to ${user.login} for being a new contributor to the ${m.payload.repository.name} repository!\n:partying_face::love_you_gesture:`)
+                    newsChannel.send(embed);
                 }
                 return;
             }
@@ -150,11 +152,25 @@ webhooks.onAny((m) => {
             if (m.name === "issues") {
                 // embed.setThumbnail(http://cdn.onlinewebfonts.com/svg/img_2382.png);
                 if (m.payload.action === "opened") {
-                    const user = m.payload.member;
+                    const user = m.payload.sender;
                     const embed = new Discord.MessageEmbed();
                     embed.setColor('#0099ff');
                     embed.setAuthor(user.login, user.avatar_url, user.html_url);
-                    embed.setDescription(`${m.payload.issue.user.login} opened an issue: ${m.payload.issue.title}\n${m.payload.issue.html_url}`)
+                    embed.setDescription(`${m.payload.issue.user.login} opened an issue: ${m.payload.issue.title}\n\n${m.payload.issue.body}`);
+                    newsChannel.send(embed);
+                }
+                return;
+            }
+
+            if (m.name === "issue_comment") {
+                if (m.payload.action === "created") {
+                    const user = m.payload.sender;
+                    const embed = new Discord.MessageEmbed();
+                    embed.setColor('#0099ff');
+                    embed.setAuthor(user.login, user.avatar_url, user.html_url);
+                    embed.setURL(m.payload.issue.html_url);
+                    embed.setDescription(`${user.login} commented on: ${m.payload.issue.title}\n\n${m.payload.comment.body}`)
+                    newsChannel.send(embed);
                 }
                 return;
             }
