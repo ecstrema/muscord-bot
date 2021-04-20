@@ -79,6 +79,11 @@ webhooks.onAny((m) => {
                     embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
                     newsChannel.send(embed);
                 }
+                else if (m.payload.action === "ready_for_review") {
+                    embed.setTitle("PR Ready for review - " + pr.title);
+                    embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
+                    newsChannel.send(embed);
+                }
                 return;
             }
 
@@ -135,7 +140,11 @@ webhooks.onAny((m) => {
             if (m.name === "issues") {
                 // embed.setThumbnail(http://cdn.onlinewebfonts.com/svg/img_2382.png);
                 if (m.payload.action === "opened") {
-                    newsChannel.send(`${m.payload.issue.user.login} opened an issue: ${m.payload.issue.title}\n${m.payload.issue.html_url}`)
+                    const user = m.payload.member;
+                    const embed = new Discord.MessageEmbed();
+                    embed.setColor('#0099ff');
+                    embed.setAuthor(user.login, user.avatar_url, user.html_url);
+                    embed.setDescription(`${m.payload.issue.user.login} opened an issue: ${m.payload.issue.title}\n${m.payload.issue.html_url}`)
                 }
                 return;
             }
