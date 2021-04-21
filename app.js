@@ -55,24 +55,34 @@ webhooks.onAny((m) => {
                 embed.setAuthor(user.login, user.avatar_url, user.html_url);
                 embed.setURL(pr.html_url);
                 embed.setThumbnail("https://img.icons8.com/ios/452/pull-request.png");
-                if (m.payload.action === "opened") {
-                    embed.setTitle("New Pull Request - " + pr.title);
-                    embed.setDescription(`[\`#${pr.number}\`](${pr.html_url} 'View on github')\n\n${pr.body}`);
-                }
-                else if (m.payload.action === "closed") {
-                    if (pr.merged) {
-                        return; // The PR was merged. The discord github bot will take care of notifications.
-                    }
-                    embed.setTitle("PR Closed - " + pr.title);
-                    embed.setDescription(`[\`${pr.number}\`](${pr.html_url} '${pr.body}')`);
-                }
-                else if (m.payload.action === "reopened") {
-                    embed.setTitle("PR Reopened - " + pr.title);
-                    embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
-                }
-                else if (m.payload.action === "ready_for_review") {
-                    embed.setTitle("PR Ready for review - " + pr.title);
-                    embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
+
+                switch (m.payload.action) {
+                    case "opened":
+                        embed.setTitle("New Pull Request - " + pr.title);
+                        embed.setDescription(`[\`#${pr.number}\`](${pr.html_url} 'View on github')\n\n${pr.body}`);
+                        break;
+
+                    case "closed":
+                        if (pr.merged) {
+                            return; // The PR was merged. The discord github bot will take care of notifications.
+                        }
+                        embed.setTitle("PR Closed - " + pr.title);
+                        embed.setDescription(`[\`${pr.number}\`](${pr.html_url} '${pr.body}')`);
+                        break;
+
+                    case "reopened":
+                        embed.setTitle("PR Reopened - " + pr.title);
+                        embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
+                        break;
+
+                    case "ready_for_review":
+                        embed.setTitle("PR Ready for review - " + pr.title);
+                        embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
+                        break;
+
+                    default:
+                        // prevent sending the embed.
+                        return;
                 }
                 newsChannel.send(embed);
                 return;
