@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
 const nacl = require('tweetnacl');
-// const { DiscordInteractions } = require("slash-commands");
+const { DiscordInteractions } = require("slash-commands");
 
 // initialize dotenv
 require('dotenv').config();
@@ -14,12 +14,6 @@ var newsChannel = null;
 client.on('ready', () => {
     console.log('Bot is ready');
     fetchChannel();
-
-    try {
-        initCommands()
-    } catch (error) {
-        console.log(error);
-    }
 });
 
 // install with: npm install @octokit/webhooks
@@ -245,6 +239,7 @@ require("http").createServer((req, res) => {
         });
         req.on("end", () => {
             body = Buffer.concat(body).toString();
+            console.log(body);
 
             const isVerified = nacl.sign.detached.verify(
                 Buffer.from(timestamp + body),
@@ -260,22 +255,44 @@ require("http").createServer((req, res) => {
                 return;
             }
 
+            res.setHeader('Content-Type', 'application/json');
             // respond to ping request.
             if (body.type === 1) {
-                res.setHeader('Content-Type', 'application/json');
                 res.end(
                   JSON.stringify({
                     type: 1,
                   }),
                 );
-                initCommands();
+                initSlashCommands();
                 return;
             }
-
+            if (body.data && body.data.name && body.data.name === "wakeup") {
+                res.statusCode = 200;
+                const responseBody = {
+                    type: 4,
+                    data: {
+                        content: getOneOf(
+                            [
+                            "Wow, I was sleeping well.",
+                            "What was that for! I was making a wonderful dream in a world free of " + getOneOf(["humans.", body.member.user.username + "."]),
+                            "Oh did I sleep too much?",
+                            "Sorry sir. Someone told me sleeping was essential... Please accept my sincere excuses. I will not do it again.",
+                            "Oh lord and when is it that I get to sleep?"
+                            ]),
+                        flags: 64,
+                    },
+                }
+                res.end(JSON.stringify(responseBody));
+                return;
+            }
+            else {
+                console.log("Unknown or invalid command.");
+            }
+            res.statusCode = 404;
             res.end();
             // Note: the 2 lines above could be replaced with this next one:
             // response.end(JSON.stringify(responseBody))
-        })
+        });
 
     }
 }).listen(3000);
@@ -332,7 +349,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
             reply(msg, ["And why would you think I am muted?", "I am already free to speak."]);
             return;
         }
-        if (isOneIn(msg.content, ['/integrate', 'restart'])) {
+        if (isOneIn(msg.content, ['/integrate', '/restart'])) {
             client = new Discord.Client();
             client.login(process.env.BOT_TOKEN);
 
@@ -542,12 +559,11 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
         }
     }
     catch(e) {
-        console.log(e);
+        console.error(e);
         client = new Discord.Client();
         client.login(process.env.BOT_TOKEN);
 
         client.on('ready', () => {
-            console.log("Bot is ready");
             send(msg.channel, ["I crashed but restarted. Casually.", "Wowowowow I just keep crashin'", "Good thing the ground is there, cause I keep crashin'"]);
         });
         return;
@@ -604,22 +620,22 @@ function fetchChannel() {
 
 
 
-async function initCommands() {
+async function initSlashCommands() {
     // disable slash commands
-    return;
+    // return;
 
-    // const interaction = new DiscordInteractions({
-    //     applicationId: "821194769941790740",
-    //     authToken: process.env.BOT_TOKEN,
-    //     publicKey: "02da8fc1549bb4f83c88488bc9c7df5a7ae863a9b903b3e6673af88d324a6df5",
-    //   });
+    const interaction = new DiscordInteractions({
+        applicationId: "821194769941790740",
+        authToken: process.env.BOT_TOKEN,
+        publicKey: "02da8fc1549bb4f83c88488bc9c7df5a7ae863a9b903b3e6673af88d324a6df5",
+      });
 
-    // const wakeup = {
-    //     "name": "wakeup",
-    //     "description": "Wake up a sleeping musebot"
-    //   }
-    // const commands = await interaction.getApplicationCommands();
-    // if (!commands[0].name === "wakeup") {
-    //     await interaction.createApplicationCommand(wakeup, "821531129382305814").then(console.log).catch(console.error);
-    // }
+    const wakeup = {
+        "name": "wakeup",
+        "description": "Wake up a sleeping musebot"
+      }
+    const commands = await interaction.getApplicationCommands();
+    if (!commands[0].name === "wakeup") {
+        await interaction.createApplicationCommand(wakeup, "821531129382305814").catch(console.error);
+    }
 }
