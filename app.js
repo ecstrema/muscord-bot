@@ -87,12 +87,16 @@ webhooks.onAny((m) => {
                 if (m.payload.action === "submitted") {
                     const user = m.payload.member;
                     const pr = m.payload.pull_request;
+                    const review = m.payload.review;
 
                     const embed = new Discord.MessageEmbed();
                     embed.setColor('#0099ff');
                     embed.setAuthor(user.login, user.avatar_url, user.html_url);
-                    embed.setURL(m.payload.review.html_url);
-                    embed.setDescription(`New review for [PR#\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
+                    embed.setURL(review.html_url);
+                    embed.setTitle(`New review for PR#${pr.number}`);
+                    if (review.body) {
+                        embed.setDescription(review.body);
+                    }
                     newsChannel.send(embed);
                 }
                 return;
@@ -104,6 +108,7 @@ webhooks.onAny((m) => {
                     const embed = new Discord.MessageEmbed();
                     embed.setColor('#0099ff');
                     embed.setAuthor(user.login, user.avatar_url, user.html_url);
+                    embed.setTitle("New Contributor!");
                     embed.setDescription(`Congrats to ${user.login} for being a new contributor to the ${m.payload.repository.name} repository!\n:partying_face::love_you_gesture:`)
                     newsChannel.send(embed);
                 }
@@ -153,10 +158,13 @@ webhooks.onAny((m) => {
                 // embed.setThumbnail(http://cdn.onlinewebfonts.com/svg/img_2382.png);
                 if (m.payload.action === "opened") {
                     const user = m.payload.sender;
+                    const issue = m.payload.issue;
                     const embed = new Discord.MessageEmbed();
                     embed.setColor('#0099ff');
                     embed.setAuthor(user.login, user.avatar_url, user.html_url);
-                    embed.setDescription(`${m.payload.issue.user.login} opened an issue: ${m.payload.issue.title}\n\n${m.payload.issue.body}`);
+                    embed.setURL(issue.html_url);
+                    embed.setTitle(`New Issue: ${issue.title}`);
+                    embed.setDescription(issue.body);
                     newsChannel.send(embed);
                 }
                 return;
@@ -165,11 +173,13 @@ webhooks.onAny((m) => {
             if (m.name === "issue_comment") {
                 if (m.payload.action === "created") {
                     const user = m.payload.sender;
+                    const issue = m.payload.issue;
                     const embed = new Discord.MessageEmbed();
                     embed.setColor('#0099ff');
                     embed.setAuthor(user.login, user.avatar_url, user.html_url);
-                    embed.setURL(m.payload.issue.html_url);
-                    embed.setDescription(`${user.login} commented on: ${m.payload.issue.title}\n\n${m.payload.comment.body}`)
+                    embed.setURL(issue.html_url);
+                    embed.setTitle(`New comment on "${issue.title}"`)
+                    embed.setDescription(`${m.payload.comment.body}`)
                     newsChannel.send(embed);
                 }
                 return;
