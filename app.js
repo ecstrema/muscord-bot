@@ -131,16 +131,8 @@ webhooks.onAny((m) => {
 
             if (m.name === "star") {
                 const stars = m.payload.repository.stargazers_count;
-                if (!(stars % 100)) {
+                if (!(stars % 1000)) {
                     newsChannel.send(`We reached ${stars} stars in the ${m.payload.repository.name} repo!`)
-                }
-                return;
-            }
-
-            if (m.name === "watch") {
-                const stars = m.payload.repository.watchers_count;
-                if (!(stars % 100)) {
-                    newsChannel.send(`We reached ${stars} watchers in the ${m.payload.repository.name} repo!`)
                 }
                 return;
             }
