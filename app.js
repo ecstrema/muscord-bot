@@ -59,7 +59,7 @@ webhooks.onAny((m) => {
                 switch (m.payload.action) {
                     case "opened":
                         embed.setTitle("New Pull Request - " + pr.title);
-                        embed.setDescription(`[\`#${pr.number}\`](${pr.html_url} 'View on github')\n\n${pr.body}`);
+                        embed.setDescription(`[\`#${pr.number}\`](${pr.html_url} 'View on github')\n\n${truncateString(pr.body, pr)}`);
                         break;
 
                     case "closed":
@@ -67,17 +67,17 @@ webhooks.onAny((m) => {
                             return; // The PR was merged. The discord github bot will take care of notifications.
                         }
                         embed.setTitle("PR Closed - " + pr.title);
-                        embed.setDescription(`[\`${pr.number}\`](${pr.html_url} '${pr.body}')`);
+                        embed.setDescription(`[\`${pr.number}\`](${pr.html_url} '${truncateString(pr.body, pr)}')`);
                         break;
 
                     case "reopened":
                         embed.setTitle("PR Reopened - " + pr.title);
-                        embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
+                        embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${truncateString(pr.body, pr)}')`);
                         break;
 
                     case "ready_for_review":
                         embed.setTitle("PR Ready for review - " + pr.title);
-                        embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${pr.body}')`);
+                        embed.setDescription(`[\`/${pr.number}\`](${pr.html_url} '${truncateString(pr.body, pr)}')`);
                         break;
 
                     default:
@@ -95,11 +95,11 @@ webhooks.onAny((m) => {
 
                     const embed = new Discord.MessageEmbed();
                     embed.setColor('#0099ff');
-                    embed.setAuthor(user.login, user.avatar_url, user.html_url);
+                    if (user) embed.setAuthor(user.login, user.avatar_url, user.html_url);
                     embed.setURL(review.html_url);
                     embed.setTitle(`New review for PR#${pr.number}`);
                     if (review.body) {
-                        embed.setDescription(review.body);
+                        embed.setDescription(truncateString(review.body, pr));
                     }
                     newsChannel.send(embed);
                 }
@@ -160,7 +160,7 @@ webhooks.onAny((m) => {
                     embed.setAuthor(user.login, user.avatar_url, user.html_url);
                     embed.setURL(issue.html_url);
                     embed.setTitle(`New Issue: ${issue.title}`);
-                    embed.setDescription(issue.body);
+                    embed.setDescription(truncateString(issue.body, issue));
                     newsChannel.send(embed);
                 }
                 return;
@@ -175,7 +175,7 @@ webhooks.onAny((m) => {
                     embed.setAuthor(user.login, user.avatar_url, user.html_url);
                     embed.setURL(issue.html_url);
                     embed.setTitle(`New comment on "${issue.title}"`)
-                    embed.setDescription(`${m.payload.comment.body}`)
+                    embed.setDescription(truncateString(m.payload.comment.body, issue))
                     newsChannel.send(embed);
                 }
                 return;
@@ -640,4 +640,12 @@ async function initSlashCommands() {
     if (!commands[0].name === "wakeup") {
         await interaction.createApplicationCommand(wakeup, "821531129382305814").catch(console.error);
     }
+}
+
+function truncateString(s, pr = null, maxLength = 1750) {
+  if (!s) return "";
+  if (s.length > maxLength)
+    return s.substring(0, maxLength) + "\nMessage truncated at " + maxLength + " characters" + pr ? `, [\`#${pr.number}\`](${pr.html_url} 'view on github')` : "."
+
+  return s;
 }
