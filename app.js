@@ -18,6 +18,7 @@ client.on('ready', () => {
 
 // install with: npm install @octokit/webhooks
 const { Webhooks } = require("@octokit/webhooks");
+const { Octokit } = require("@octokit/core");
 const { resolveOverwriteOptions } = require('discord.js/src/structures/PermissionOverwrites');
 
 require('dotenv').config();
@@ -25,6 +26,10 @@ require('dotenv').config();
 const webhooks = new Webhooks({
   secret: process.env.WEBHOOK_TOKEN,
   path: "/github"
+});
+
+const octokit = new Octokit({
+    auth: process.env.WEBHOOK_TOKEN
 });
 
 webhooks.onAny((m) => {
@@ -89,18 +94,51 @@ webhooks.onAny((m) => {
             }
             if (m.name === "pull_request_review") {
                 if (m.payload.action === "submitted") {
-                    const user = m.payload.member;
                     const pr = m.payload.pull_request;
                     const review = m.payload.review;
+                    const user = m.payload.review.user;
 
                     const embed = new Discord.MessageEmbed();
                     embed.setColor('#0099ff');
-                    if (user) embed.setAuthor(user.login, user.avatar_url, user.html_url);
+                    embed.setAuthor(user.login, user.avatar_url, user.html_url);
                     embed.setURL(review.html_url);
-                    embed.setTitle(`New review for PR#${pr.number}`);
-                    if (review.body) {
-                        embed.setDescription(truncateString(review.body, pr));
+
+                    let title = `New review for PR #${pr.number} – ${pr.title}`;
+                    if (review.state.toLowerCase() === "approved") {
+                        title = `Approved PR #${pr.number} - ${pr.title}`;
+                    } else if (review.state.toLowerCase() === "changes_requested") {
+                        title = `Changes requested to PR #${pr.number} - ${pr.title}`;
                     }
+
+                    embed.setTitle(title);
+
+                    const comments = await octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews/{review_id}/comments', {
+                        owner: m.payload.repository.owner.login,
+                        repo: m.payload.repository.name,
+                        pull_number: pr.number,
+                        review_id: review.id
+                    });
+
+                    let commentCount = comments.length;
+                    let commentCountDescription = commentCount === 1 ? '1 comment' : `${commentCount} comments`;
+
+                    let description = null;
+                    if (review.body && commentCount) {
+                        description = `${truncateString(review.body, pr)}\n\n${commentCountDescription}`;
+                    } else if (review.body) {
+                        description = truncateString(review.body, pr);
+                    } else if (commentCount) {
+                        if (commentCount === 1 && comments[0].body) {
+                            description = truncateString(comments[0].body, pr);
+                        } else {
+                            description = commentCountDescription;
+                        }
+                    }
+
+                    if (description) {
+                        embed.setDescription(description);
+                    }
+
                     newsChannel.send(embed);
                 }
                 return;
