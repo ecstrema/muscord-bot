@@ -105,9 +105,9 @@ webhooks.onAny((m) => {
 
                     let title = `New review for PR #${pr.number} – ${pr.title}`;
                     if (review.state.toLowerCase() === "approved") {
-                        title = `Approved PR #${pr.number} - ${pr.title}`;
+                        title = `PR #${pr.number} approved – ${pr.title}`;
                     } else if (review.state.toLowerCase() === "changes_requested") {
-                        title = `Changes requested to PR #${pr.number} - ${pr.title}`;
+                        title = `Changes requested to PR #${pr.number} – ${pr.title}`;
                     }
 
                     embed.setTitle(title);
@@ -122,7 +122,7 @@ webhooks.onAny((m) => {
                     let commentCount = comments.length;
                     let commentCountDescription = commentCount === 1 ? '1 comment' : `${commentCount} comments`;
 
-                    let description = null;
+                    let description = "No description provided";
                     if (review.body && commentCount) {
                         description = `${truncateString(review.body, pr)}\n\n${commentCountDescription}`;
                     } else if (review.body) {
