@@ -32,7 +32,7 @@ const octokit = new Octokit({
     auth: process.env.WEBHOOK_TOKEN
 });
 
-webhooks.onAny((m) => {
+webhooks.onAny(async (m) => {
     try {
         if (newsChannel) {
             if (m.name === "push") {
