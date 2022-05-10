@@ -218,6 +218,36 @@ webhooks.onAny(async (m) => {
                 }
                 return;
             }
+            
+            if (m.name === "discussion") {
+                if (m.payload.action === "created") {
+                    const user = m.payload.sender;
+                    const discussion = m.payload.discussion;
+                    const embed = new Discord.MessageEmbed();
+                    embed.setColor('#0099ff');
+                    embed.setAuthor(user.login, user.avatar_url, user.html_url);
+                    embed.setURL(discussion.url);
+                    embed.setTitle(`New Discussion: ${discussion.title}`);
+                    embed.setDescription(truncateString(discussion.body, discussion));
+                    newsChannel.send(embed);
+                }
+                return;
+            }
+
+            if (m.name === "discussion_comment") {
+                if (m.payload.action === "created") {
+                    const user = m.payload.sender;
+                    const discussion = m.payload.discussion;
+                    const embed = new Discord.MessageEmbed();
+                    embed.setColor('#0099ff');
+                    embed.setAuthor(user.login, user.avatar_url, user.html_url);
+                    embed.setURL(discussion.url);
+                    embed.setTitle(`New comment on "${discussion.title}"`);
+                    embed.setDescription(truncateString(m.payload.comment.body, discussion));
+                    newsChannel.send(embed);
+                }
+                return;
+            }
 
             if (m.name === "milestone") {
                 if (isOneIn(m.payload.action, ["opened"])) {
