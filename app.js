@@ -217,7 +217,7 @@ webhooks.onAny(async (m) => {
                 }
                 return;
             }
-            
+
             if (m.name === "discussion") {
                 if (m.payload.action === "created") {
                     const user = m.payload.sender;
@@ -524,7 +524,7 @@ If you encounter any issue/typo visit https://github.com/Marr11317/muscord-bot.
                          "Your orders have been executed, Sir.",
                          "Done.", "Thank you my dear, they were annoying me too.",
                          "Ohhh... Look! They disappeared!",
-                         `A wild ${n_copy} messages has disappeared!`].map((m) => m + willDisappear ));
+                         `A wild ${n_copy}-message has disappeared!`].map((m) => m + willDisappear ));
                 }
                 else {
                     bot_msg_promise = send(msg.channel, ["Deleted last message.", "Message deleted."].map((m) => m + willDisappear ));
