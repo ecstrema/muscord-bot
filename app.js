@@ -297,7 +297,7 @@ require("http").createServer((req, res) => {
         return;
     }
     else if (req.url === "/discord") {
-        // The public key can be found on your application in the Developer Portal
+        // Comes from the discord developer portal
         const PUBLIC_KEY = '02da8fc1549bb4f83c88488bc9c7df5a7ae863a9b903b3e6673af88d324a6df5';
 
         const signature = req.headers['x-signature-ed25519'];
