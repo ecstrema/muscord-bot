@@ -225,7 +225,7 @@ webhooks.onAny(async (m) => {
                     const embed = new Discord.MessageEmbed();
                     embed.setColor('#0099ff');
                     embed.setAuthor(user.login, user.avatar_url, user.html_url);
-                    embed.setURL(discussion.url);
+                    embed.setURL(discussion.html_url);
                     embed.setTitle(`New Discussion: ${discussion.title}`);
                     embed.setDescription(truncateString(discussion.body, discussion));
                     newsChannel.send(embed);
@@ -240,7 +240,7 @@ webhooks.onAny(async (m) => {
                     const embed = new Discord.MessageEmbed();
                     embed.setColor('#0099ff');
                     embed.setAuthor(user.login, user.avatar_url, user.html_url);
-                    embed.setURL(discussion.url);
+                    embed.setURL(discussion.html_url);
                     embed.setTitle(`New comment on "${discussion.title}"`);
                     embed.setDescription(truncateString(m.payload.comment.body, discussion));
                     newsChannel.send(embed);
